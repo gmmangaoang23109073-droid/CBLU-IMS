@@ -1,1 +1,20 @@
-DED
+<?php
+// Database Configuration Template
+// Instructions: 
+// 1. Copy this file and rename it to 'db_connect.php'
+// 2. Place the copied file inside your '1_Source_Code/application_folder/'
+// 3. Update the credentials below if your XAMPP setup is different.
+
+$host = "localhost";
+$username = "root"; // Default XAMPP username
+$password = "";     // Default XAMPP password is empty
+$database = "cblu_system";
+
+// Create connection
+$conn = new mysqli($host, $username, $password, $database);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
