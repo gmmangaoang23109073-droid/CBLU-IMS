@@ -1,0 +1,10 @@
+name: cblu-connect-environment
+channels:
+  - local
+dependencies:
+  - xampp
+  - apache
+  - mysql
+  - php=8.2
+  - phpmyadmin
+  - vscode
