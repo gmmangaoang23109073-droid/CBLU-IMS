@@ -2,61 +2,72 @@
 session_start();
 include("../includes/db.php");
 
-if(isset($_POST['login'])){
+$error = "";
+$username_val = "";
 
-    $username = $_POST['username'];
+if (isset($_POST['login'])) {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = md5($_POST['password']);
+    $username_val = $username;
 
-    $query = mysqli_query($conn,
-    "SELECT * FROM users
-    WHERE username='$username'
-    AND password='$password'");
+    $query = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+    $result = mysqli_query($conn, $query);
 
-    if(mysqli_num_rows($query) > 0){
-
-        $user = mysqli_fetch_assoc($query);
-
+    if (mysqli_num_rows($result) == 1) {
+        $user = mysqli_fetch_assoc($result);
         $_SESSION['id'] = $user['id'];
         $_SESSION['fullname'] = $user['fullname'];
         $_SESSION['role'] = $user['role'];
 
-        if($user['role'] == "admin"){
+        if ($user['role'] == "admin") {
             header("Location: ../admin/dashboard.php");
-        }else{
+        } else {
             header("Location: ../user/dashboard.php");
         }
-
-    }else{
-        echo "<script>alert('Invalid Username or Password');</script>";
+        exit();
+    } else {
+        $error = "Invalid username or password!";
     }
-
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Login - CBLU Connect</title>
 </head>
-<body>
+<body style="display:flex; justify-content:center; align-items:center; height:100vh;">
 
-<h2>Login</h2>
+<div class="card" style="width: 100%; max-width: 400px; padding: 30px;">
+    <h2 style="text-align: center; color: var(--primary-navy); margin-bottom: 20px;">CBLU Connect Login</h2>
 
-<form method="POST">
+    <?php if(!empty($error)): ?>
+        <div class="alert alert-danger" style="background:#fee2e2; color:#991b1b; padding:10px; border-radius:6px; margin-bottom:15px; border:1px solid #f87171; font-size:14px;">
+            <?php echo $error; ?>
+        </div>
+    <?php endif; ?>
 
-    <label>Username</label><br>
-    <input type="text" name="username" required><br><br>
+    <form method="POST" id="loginForm">
+        <div style="margin-bottom: 15px;">
+            <label>Username</label>
+            <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($username_val); ?>" class="<?php echo !empty($error) ? 'input-error' : ''; ?>" required>
+        </div>
 
-    <label>Password</label><br>
-    <input type="password" name="password" required><br><br>
+        <div style="margin-bottom: 20px;">
+            <label>Password</label>
+            <input type="password" name="password" id="password" class="<?php echo !empty($error) ? 'input-error' : ''; ?>" required>
+        </div>
 
-    <button type="submit" name="login">Login</button>
+        <button type="submit" name="login" class="btn" style="width: 100%; background: var(--primary-navy);">Login</button>
+    </form>
 
-</form>
-
-<br>
-
-<a href="register.php">Create Account</a>
+    <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+        Don't have an account? <a href="register.php" style="color: var(--accent-blue);">Register here</a>
+    </p>
+</div>
 
 </body>
 </html>
